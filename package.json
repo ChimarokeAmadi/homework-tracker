@@ -3,10 +3,15 @@
   "version": "0.1.0",
   "description": "A small command-line app to keep track of homework.",
   "type": "module",
-  "bin": { "homework": "src/cli.js" },
-  "scripts": {
-    "start": "node src/cli.js"
+  "bin": {
+    "homework": "src/cli.js"
   },
-  "engines": { "node": ">=20.19" },
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
   "license": "MIT"
 }
