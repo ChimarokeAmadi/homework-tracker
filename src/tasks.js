@@ -42,3 +42,13 @@ export function listTasks(list, showDone) {
   if (showDone) return list;
   return list.filter((task) => !task.done);
 }
+
+// A task is overdue when it isn't done and its due date is before today.
+// Dates are compared as text, which works because they are all YYYY-MM-DD.
+export function isOverdue(task, today = new Date().toISOString().slice(0, 10)) {
+  return !task.done && Boolean(task.due) && task.due < today;
+}
+
+export function overdueTasks(list, today) {
+  return list.filter((task) => isOverdue(task, today)).sort((a, b) => a.due.localeCompare(b.due));
+}

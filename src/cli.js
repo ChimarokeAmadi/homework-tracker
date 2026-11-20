@@ -3,7 +3,7 @@
 // homework list [--all]
 // homework done 2
 // homework remove 2
-import { completeTask, createTask, listTasks, removeTask } from './tasks.js';
+import { completeTask, createTask, isOverdue, listTasks, overdueTasks, removeTask } from './tasks.js';
 import { load, save } from './storage.js';
 
 const HELP = `Usage:
@@ -11,6 +11,7 @@ const HELP = `Usage:
   homework list [--all]                          show tasks (--all includes finished ones)
   homework done <id>                             mark a task as finished
   homework remove <id>                           delete a task
+  homework overdue                               show the tasks that are late
   homework help                                  show this help`;
 
 function option(args, name) {
@@ -21,7 +22,7 @@ function option(args, name) {
 
 function show(task) {
   const box = task.done ? '[x]' : '[ ]';
-  const due = task.due ? ` due ${task.due}` : '';
+  const due = task.due ? ` due ${task.due}${isOverdue(task) ? ' (LATE!)' : ''}` : '';
   return `${String(task.id).padStart(3)} ${box} ${task.title} (${task.subject})${due}`;
 }
 
@@ -42,6 +43,10 @@ export function run(args, print = console.log) {
   } else if (command === 'remove') {
     save(removeTask(list, Number(args[1])));
     print('Removed.');
+  } else if (command === 'overdue') {
+    const late = overdueTasks(list);
+    if (late.length === 0) print('Nothing is late. Nice!');
+    late.forEach((t) => print(show(t)));
   } else {
     print(HELP);
   }
