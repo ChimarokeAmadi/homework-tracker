@@ -63,3 +63,9 @@ export function stats(list) {
   const done = list.filter((task) => task.done).length;
   return { total: list.length, done, todo: list.length - done, bySubject };
 }
+
+// Deletes every finished task and keeps the rest.
+export function clearDone(list) {
+  const before = list.length;
+  return list.filter((task) => task.done);
+}

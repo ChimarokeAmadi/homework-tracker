@@ -47,3 +47,12 @@ test('stats shows the progress', () => {
   homework('done', '1');
   assert.match(homework('stats'), /1 of 2 tasks done \(50%\)\n {2}english\s+1 done, 0 to do\n {2}maths\s+0 done, 1 to do/);
 });
+
+test('clear deletes the finished tasks', () => {
+  homework('add', 'Finished');
+  homework('add', 'Still to do');
+  homework('done', '1');
+  assert.equal(homework('clear'), 'Cleared 1 finished task(s).');
+  assert.match(homework('list', '--all'), /Still to do/);
+  assert.doesNotMatch(homework('list', '--all'), /Finished/);
+});

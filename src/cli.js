@@ -3,7 +3,7 @@
 // homework list [--all]
 // homework done 2
 // homework remove 2
-import { completeTask, createTask, isOverdue, listTasks, overdueTasks, removeTask, stats } from './tasks.js';
+import { clearDone, completeTask, createTask, isOverdue, listTasks, overdueTasks, removeTask, stats } from './tasks.js';
 import { load, save } from './storage.js';
 
 const HELP = `Usage:
@@ -13,6 +13,7 @@ const HELP = `Usage:
   homework remove <id>                           delete a task
   homework overdue                               show the tasks that are late
   homework stats                                 how much is done, per subject
+  homework clear                                 delete all finished tasks
   homework help                                  show this help`;
 
 function option(args, name) {
@@ -55,6 +56,10 @@ export function run(args, print = console.log) {
     for (const [subject, count] of Object.entries(s.bySubject)) {
       print(`  ${subject.padEnd(12)} ${count.done} done, ${count.todo} to do`);
     }
+  } else if (command === 'clear') {
+    const kept = clearDone(list);
+    save(kept);
+    print(`Cleared ${list.length - kept.length} finished task(s).`);
   } else {
     print(HELP);
   }
