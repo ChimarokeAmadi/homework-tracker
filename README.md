@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ChimarokeAmadi/homework-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/ChimarokeAmadi/homework-tracker/actions/workflows/ci.yml)
 
-A small command-line app to keep track of homework. I built it for a GoMyCode checkpoint about **version control, continuous integration and quality assurance**. The app is deliberately simple, so the focus stays on the workflow around it: Git branches and merges, a CI pipeline, tests, a linter and code reviews.
+A simple command-line app to keep track of homework. I built it for a GoMyCode checkpoint about **version control, continuous integration and quality assurance**. The app is deliberately simple, so the focus stays on the workflow around it: Git branches and merges, a CI pipeline, tests, a linter and code reviews.
 
 | Deliverable | Where |
 |---|---|
