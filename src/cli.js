@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { realpathSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 // homework add "Read chapter 3" --subject english
 // homework list [--all]
 // homework done 2
@@ -60,7 +62,19 @@ export function run(args, print = console.log) {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Only run when this file is the program being started, not when a test
+// imports it. Comparing real file paths (not URLs) also works when the app is
+// started through npm's `homework` link, or from a folder with a space in
+// its name (the URL would have %20 instead of the space).
+function isMainModule() {
+  try {
+    return realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+  } catch {
+    return false;
+  }
+}
+
+if (isMainModule()) {
   try {
     run(process.argv.slice(2));
   } catch (err) {
