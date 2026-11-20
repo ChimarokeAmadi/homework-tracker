@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+import { realpathSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 // homework add "Read chapter 3" --subject english
 // homework list [--all]
 // homework done 2
 // homework remove 2
-import { clearDone, completeTask, createTask, isOverdue, listTasks, overdueTasks, removeTask, stats } from './tasks.js';
+import { clearDone, completeTask, createTask, findTasks, isOverdue, listTasks, overdueTasks, removeTask, stats } from './tasks.js';
 import { load, save } from './storage.js';
 
 const HELP = `Usage:
@@ -13,6 +15,7 @@ const HELP = `Usage:
   homework remove <id>                           delete a task
   homework overdue                               show the tasks that are late
   homework stats                                 how much is done, per subject
+  homework find <word>                           search titles and subjects
   homework clear                                 delete all finished tasks
   homework help                                  show this help`;
 
@@ -56,6 +59,11 @@ export function run(args, print = console.log) {
     for (const [subject, count] of Object.entries(s.bySubject)) {
       print(`  ${subject.padEnd(12)} ${count.done} done, ${count.todo} to do`);
     }
+  } else if (command === 'find') {
+    const word = args.slice(1).join(' ');
+    const found = findTasks(list, word);
+    if (found.length === 0) print(`No task matches "${word}".`);
+    found.forEach((t) => print(show(t)));
   } else if (command === 'clear') {
     const kept = clearDone(list);
     save(kept);
@@ -65,7 +73,19 @@ export function run(args, print = console.log) {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Only run when this file is the program being started, not when a test
+// imports it. Comparing real file paths (not URLs) also works when the app is
+// started through npm's `homework` link, or from a folder with a space in
+// its name (the URL would have %20 instead of the space).
+function isMainModule() {
+  try {
+    return realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+  } catch {
+    return false;
+  }
+}
+
+if (isMainModule()) {
   try {
     run(process.argv.slice(2));
   } catch (err) {

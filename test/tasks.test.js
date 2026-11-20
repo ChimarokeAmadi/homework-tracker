@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { clearDone, completeTask, createTask, isOverdue, listTasks, overdueTasks, removeTask, stats } from '../src/tasks.js';
+import { clearDone, completeTask, createTask, findTasks, isOverdue, listTasks, overdueTasks, removeTask, stats } from '../src/tasks.js';
 
 test('createTask adds a task with the next id', () => {
   let list = createTask([], 'Read chapter 3', 'english');
@@ -80,6 +80,16 @@ test('stats counts done and to-do tasks, per subject', () => {
     bySubject: { english: { done: 1, todo: 1 }, maths: { done: 0, todo: 1 } },
   });
   assert.deepEqual(stats([]), { total: 0, done: 0, todo: 0, bySubject: {} });
+});
+
+test('findTasks searches the title and the subject, ignoring case', () => {
+  let list = createTask([], 'Read chapter 3', 'english');
+  list = createTask(list, 'Essay on Romeo and Juliet', 'English');
+  list = createTask(list, 'Equations', 'maths');
+  assert.deepEqual(findTasks(list, 'ENGLISH').map((t) => t.id), [1, 2]);
+  assert.deepEqual(findTasks(list, 'equa').map((t) => t.id), [3]);
+  assert.deepEqual(findTasks(list, 'history'), []);
+  assert.throws(() => findTasks(list, '  '), /what to look for/);
 });
 
 test('clearDone deletes the finished tasks and keeps the others', () => {

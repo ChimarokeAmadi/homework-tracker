@@ -48,6 +48,15 @@ test('stats shows the progress', () => {
   assert.match(homework('stats'), /1 of 2 tasks done \(50%\)\n {2}english\s+1 done, 0 to do\n {2}maths\s+0 done, 1 to do/);
 });
 
+test('find shows matching tasks', () => {
+  homework('add', 'Read chapter 3', '--subject', 'english');
+  homework('add', 'Equations', '--subject', 'maths');
+  assert.match(homework('find', 'chapter'), /Read chapter 3/);
+  assert.equal(homework('find', 'history'), 'No task matches "history".');
+  homework('add', 'Romeo and Juliet essay', '--subject', 'english');
+  assert.match(homework('find', 'romeo', 'and', 'juliet'), /Romeo and Juliet essay/, 'searches with all the words');
+});
+
 test('clear deletes the finished tasks', () => {
   homework('add', 'Finished');
   homework('add', 'Still to do');
