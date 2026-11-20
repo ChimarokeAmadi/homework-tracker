@@ -1,0 +1,41 @@
+
+src/cli.js
+  17:3   error  Unexpected var, use let or const instead  no-var
+  18:9   error  Expected '===' and instead saw '=='       eqeqeq
+  23:3   error  Unexpected var, use let or const instead  no-var
+  28:3   error  Unexpected var, use let or const instead  no-var
+  29:3   error  Unexpected var, use let or const instead  no-var
+  30:15  error  Expected '===' and instead saw '=='       eqeqeq
+  33:11  error  Unexpected string concatenation           prefer-template
+  34:22  error  Expected '===' and instead saw '=='       eqeqeq
+  35:5   error  Unexpected var, use let or const instead  no-var
+  36:22  error  Expected '===' and instead saw '=='       eqeqeq
+  38:22  error  Expected '===' and instead saw '=='       eqeqeq
+  41:22  error  Expected '===' and instead saw '=='       eqeqeq
+  53:19  error  Unexpected string concatenation           prefer-template
+
+src/storage.js
+  10:3   error  Unexpected var, use let or const instead  no-var
+  15:23  error  Unexpected string concatenation           prefer-template
+
+src/tasks.js
+   4:3   error  Unexpected var, use let or const instead     no-var
+   5:18  error  Expected '===' and instead saw '=='          eqeqeq
+   8:3   error  Unexpected var, use let or const instead     no-var
+   9:8   error  Unexpected var, use let or const instead     no-var
+  12:3   error  Unexpected var, use let or const instead     no-var
+  17:3   error  Unexpected var, use let or const instead     no-var
+  18:3   error  Unexpected var, use let or const instead     no-var
+  18:25  error  Unexpected function expression               prefer-arrow-callback
+  19:17  error  Expected '===' and instead saw '=='          eqeqeq
+  25:31  error  Unexpected string concatenation              prefer-template
+  30:3   error  Unexpected var, use let or const instead     no-var
+  30:46  error  Expected '!==' and instead saw '!='          eqeqeq
+  31:21  error  Expected '===' and instead saw '=='          eqeqeq
+  31:53  error  Unexpected string concatenation              prefer-template
+  36:3   error  Unexpected var, use let or const instead     no-var
+  36:7   error  'unused' is assigned a value but never used  no-unused-vars
+
+✖ 31 problems (31 errors, 0 warnings)
+  20 errors and 0 warnings potentially fixable with the `--fix` option.
+
