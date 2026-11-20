@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 // homework list [--all]
 // homework done 2
 // homework remove 2
-import { completeTask, createTask, isOverdue, listTasks, overdueTasks, removeTask, stats } from './tasks.js';
+import { completeTask, createTask, findTasks, isOverdue, listTasks, overdueTasks, removeTask, stats } from './tasks.js';
 import { load, save } from './storage.js';
 
 const HELP = `Usage:
@@ -15,6 +15,7 @@ const HELP = `Usage:
   homework remove <id>                           delete a task
   homework overdue                               show the tasks that are late
   homework stats                                 how much is done, per subject
+  homework find <word>                           search titles and subjects
   homework help                                  show this help`;
 
 function option(args, name) {
@@ -57,6 +58,10 @@ export function run(args, print = console.log) {
     for (const [subject, count] of Object.entries(s.bySubject)) {
       print(`  ${subject.padEnd(12)} ${count.done} done, ${count.todo} to do`);
     }
+  } else if (command === 'find') {
+    const found = findTasks(list, args[1]);
+    if (found.length === 0) print(`No task matches "${args[1]}".`);
+    found.forEach((t) => print(show(t)));
   } else {
     print(HELP);
   }
