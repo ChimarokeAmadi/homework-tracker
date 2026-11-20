@@ -66,6 +66,5 @@ export function stats(list) {
 
 // Deletes every finished task and keeps the rest.
 export function clearDone(list) {
-  const before = list.length;
-  return list.filter((task) => task.done);
+  return list.filter((task) => !task.done);
 }
