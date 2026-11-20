@@ -10,7 +10,7 @@
     "start": "node src/cli.js",
     "lint": "eslint .",
     "test": "node --test",
-    "test:coverage": "node --test --experimental-test-coverage --test-coverage-lines=90",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include='src/**' --test-coverage-lines=90",
     "smoke": "node scripts/smoke.js",
     "check": "npm run lint && npm test && npm run smoke"
   },
