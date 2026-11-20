@@ -1,0 +1,104 @@
+# Continuous integration: runs on every push to any branch and on every pull
+# request to main. If any job fails, the commit gets a red ✗ on GitHub, the
+# pull request can't be merged (with branch protection on), and GitHub emails
+# the person who pushed.
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [main]
+
+# A newer push to the same branch cancels the run that's still going.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint (ESLint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  test:
+    name: Unit tests (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Run the unit tests
+        if: matrix.node != 22
+        run: npm test
+      # Node 22 can also enforce a minimum coverage (the option doesn't exist
+      # on Node 20): fails if the tests run less than 90% of the lines.
+      - name: Run the unit tests with coverage (minimum 90%)
+        if: matrix.node == 22
+        run: npm run test:coverage
+
+  build:
+    name: Build and run the app
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run the real commands (smoke test)
+        run: npm run smoke
+      - name: Package the app
+        run: npm pack
+      - uses: actions/upload-artifact@v7
+        with:
+          name: homework-tracker-package
+          path: '*.tgz'
+
+  # Writes a short pass/fail table on the run's summary page and, if a Slack
+  # webhook is configured in the repo's secrets, posts the result to Slack.
+  report:
+    name: Report result
+    needs: [lint, test, build]
+    if: always()
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      RESULT: ${{ contains(needs.*.result, 'failure') && 'failed' || (contains(needs.*.result, 'cancelled') && 'cancelled' || 'passed') }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Summary
+        run: |
+          {
+            echo "## Build ${RESULT}"
+            echo "| Job | Result |"
+            echo "|---|---|"
+            echo "| Lint | ${{ needs.lint.result }} |"
+            echo "| Unit tests | ${{ needs.test.result }} |"
+            echo "| Build and run | ${{ needs.build.result }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Notify Slack
+        if: env.SLACK_WEBHOOK_URL != ''
+        run: |
+          if [ "$RESULT" = "passed" ]; then ICON="✅"; else ICON="❌"; fi
+          curl -sS -X POST -H 'Content-type: application/json' "$SLACK_WEBHOOK_URL" \
+            --data "{\"text\":\"${ICON} CI ${RESULT} on ${GITHUB_REF_NAME} (${GITHUB_ACTOR}): ${RUN_URL}\"}"

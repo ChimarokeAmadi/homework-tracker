@@ -8,8 +8,11 @@
   },
   "scripts": {
     "start": "node src/cli.js",
+    "lint": "eslint .",
     "test": "node --test",
-    "lint": "eslint ."
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-lines=90",
+    "smoke": "node scripts/smoke.js",
+    "check": "npm run lint && npm test && npm run smoke"
   },
   "engines": {
     "node": ">=20.19"
@@ -19,5 +22,8 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.15.0",
     "globals": "^17.14.0"
-  }
+  },
+  "files": [
+    "src"
+  ]
 }
