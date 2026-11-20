@@ -7,10 +7,10 @@ export function filePath() {
 
 export function load(path = filePath()) {
   if (!existsSync(path)) return [];
-  var data = JSON.parse(readFileSync(path, 'utf8'));
+  const data = JSON.parse(readFileSync(path, 'utf8'));
   return data.tasks;
 }
 
 export function save(list, path = filePath()) {
-  writeFileSync(path, JSON.stringify({ tasks: list }, null, 2) + '\n');
+  writeFileSync(path, `${JSON.stringify({ tasks: list }, null, 2)}\n`);
 }

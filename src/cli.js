@@ -14,31 +14,31 @@ const HELP = `Usage:
   homework help                                  show this help`;
 
 function option(args, name) {
-  var i = args.indexOf(name);
-  if (i == -1) return undefined;
+  const i = args.indexOf(name);
+  if (i === -1) return undefined;
   return args[i + 1];
 }
 
 function show(task) {
-  var box = task.done ? '[x]' : '[ ]';
+  const box = task.done ? '[x]' : '[ ]';
   return `${String(task.id).padStart(3)} ${box} ${task.title} (${task.subject})`;
 }
 
 export function run(args, print = console.log) {
-  var command = args[0];
-  var list = load();
-  if (command == 'add') {
+  const command = args[0];
+  let list = load();
+  if (command === 'add') {
     list = createTask(list, args[1] || '', option(args, '--subject'));
     save(list);
-    print('Added: ' + show(list[list.length - 1]));
-  } else if (command == 'list') {
-    var tasks = listTasks(list, args.includes('--all'));
-    if (tasks.length == 0) print('Nothing to do!');
+    print(`Added: ${show(list[list.length - 1])}`);
+  } else if (command === 'list') {
+    const tasks = listTasks(list, args.includes('--all'));
+    if (tasks.length === 0) print('Nothing to do!');
     tasks.forEach((t) => print(show(t)));
-  } else if (command == 'done') {
+  } else if (command === 'done') {
     save(completeTask(list, Number(args[1])));
     print('Well done!');
-  } else if (command == 'remove') {
+  } else if (command === 'remove') {
     save(removeTask(list, Number(args[1])));
     print('Removed.');
   } else {
@@ -50,7 +50,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   try {
     run(process.argv.slice(2));
   } catch (err) {
-    console.error('Error: ' + err.message);
+    console.error(`Error: ${err.message}`);
     process.exitCode = 1;
   }
 }
