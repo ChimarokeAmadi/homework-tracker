@@ -59,8 +59,9 @@ export function run(args, print = console.log) {
       print(`  ${subject.padEnd(12)} ${count.done} done, ${count.todo} to do`);
     }
   } else if (command === 'find') {
-    const found = findTasks(list, args[1]);
-    if (found.length === 0) print(`No task matches "${args[1]}".`);
+    const word = args.slice(1).join(' ');
+    const found = findTasks(list, word);
+    if (found.length === 0) print(`No task matches "${word}".`);
     found.forEach((t) => print(show(t)));
   } else {
     print(HELP);

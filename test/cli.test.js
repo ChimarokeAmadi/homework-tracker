@@ -53,4 +53,6 @@ test('find shows matching tasks', () => {
   homework('add', 'Equations', '--subject', 'maths');
   assert.match(homework('find', 'chapter'), /Read chapter 3/);
   assert.equal(homework('find', 'history'), 'No task matches "history".');
+  homework('add', 'Romeo and Juliet essay', '--subject', 'english');
+  assert.match(homework('find', 'romeo', 'and', 'juliet'), /Romeo and Juliet essay/, 'searches with all the words');
 });
