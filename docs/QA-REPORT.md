@@ -43,7 +43,7 @@ Written with Node's built-in test runner (`node:test`), so there's nothing extra
 
 The three `fix/cli-entry-point` tests are **regression tests**. I ran them against the old code first: 2 of them fail there, so they really catch the bug.
 
-**Coverage:** the tests run **96.7%** of the lines. CI fails if this ever drops under 90%. CI also runs a **smoke test** (`npm run smoke`) that starts the real program as a user would and runs every command.
+**Coverage:** the tests run **97%** of the lines of the app's code (`src/`). CI fails if this ever drops under 90%. CI also runs a **smoke test** (`npm run smoke`) that starts the real program as a user would and runs every command.
 
 ## 2. Linter (ESLint)
 
@@ -67,6 +67,8 @@ Config: [eslint.config.js](../eslint.config.js). It uses ESLint's recommended ru
 
 **Caught by running CI locally first:** the coverage option `--test-coverage-lines` doesn't exist in Node 20, so the Node 20 test job would have failed on every push. The pipeline now checks coverage only on Node 22.
 
+**Caught by CI on GitHub:** pull request `fix/cli-entry-point` passed on my Mac but failed **Unit tests (Node 22)**: coverage dropped to 82.8%, under the 90% minimum. Its new test copies the app into a temporary folder to start it from a path with a space, and Node counted those copies as extra, barely tested files. The app's real code was still 94–100% covered. I fixed it by measuring coverage only for `src/` (`--test-coverage-include='src/**'`), and the pull request went green.
+
 ## 3. Code reviews
 
 No classmate was available, so I reviewed each pull request **myself** on GitHub, using the checklist in the pull request template and leaving comments in the **Files changed** tab. Self-review is weaker than a review by someone else, because you read your own code with your own assumptions. The checklist and CI made up for some of that.
@@ -74,7 +76,7 @@ No classmate was available, so I reviewed each pull request **myself** on GitHub
 | Pull request | CI | Review comments | Outcome |
 |---|---|---|---|
 | **fix/cli-entry-point**: the app printed nothing when started through npm's link or from a folder with a space | ✅ | Reproduced the bug before approving: through a symlink and from "my project/", the old version printed nothing and still exited with 0. The fix compares real file paths instead of a URL, and has a test for each way of starting. Nit: the new `import` lines sit above the usage comment, so I'll move the comment in a later change. | merged |
-| **feature/search**: `homework find <word>` | ✅ | Tests cover upper/lower case, no match, and an empty search. **Issue:** `homework find romeo juliet` only searches for "romeo", because the command uses `args[1]` only. Asked for `args.slice(1).join(' ')`. | fixed in the PR, then merged |
+| **feature/search**: `homework find <word>` | ✅ | Tests cover upper/lower case, no match, and an empty search. **Issue:** `homework find romeo juliet` only searches for "romeo", because the command uses `args[1]` only. Asked for `args.slice(1).join(' ')`. | merged, then fixed in follow-up PR **fix/find-all-words** (I merged before pushing the fix, so the fix went in its own small PR, with a test for a multi-word search) |
 | **feature/clear-done**: `homework clear` | ❌ then ✅ | CI failed on the first push: ESLint `no-unused-vars` (`before` is never used), and 2 tests failed, because `clearDone` kept the **finished** tasks instead of the unfinished ones (`task.done` instead of `!task.done`). Fixed in a second commit. It then conflicted with `feature/search` (both add a command in the same places), so I resolved the conflict on GitHub. | fixed, conflict resolved, merged |
 
 ## 4. The CI pipeline catching a mistake
