@@ -69,3 +69,4 @@ On **every push to any branch** and on **every pull request**, GitHub Actions ru
 - Add, list, complete and remove tasks, each with a subject.
 - Due dates: `--due 2026-12-01` when adding, and `homework overdue` to see what's late.
 - Progress: `homework stats` shows how many tasks are done, in total and per subject.
+- Search: `homework find essay` looks in the titles and subjects.

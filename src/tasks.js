@@ -63,3 +63,10 @@ export function stats(list) {
   const done = list.filter((task) => task.done).length;
   return { total: list.length, done, todo: list.length - done, bySubject };
 }
+
+// Tasks whose title or subject contains the word (not case-sensitive).
+export function findTasks(list, word) {
+  const needle = (word ?? '').trim().toLowerCase();
+  if (needle === '') throw new Error('Tell me what to look for, e.g. homework find essay');
+  return list.filter((task) => task.title.toLowerCase().includes(needle) || task.subject.toLowerCase().includes(needle));
+}
