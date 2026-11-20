@@ -70,3 +70,8 @@ export function findTasks(list, word) {
   if (needle === '') throw new Error('Tell me what to look for, e.g. homework find essay');
   return list.filter((task) => task.title.toLowerCase().includes(needle) || task.subject.toLowerCase().includes(needle));
 }
+
+// Deletes every finished task and keeps the rest.
+export function clearDone(list) {
+  return list.filter((task) => !task.done);
+}

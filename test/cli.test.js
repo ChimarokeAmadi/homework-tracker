@@ -56,3 +56,12 @@ test('find shows matching tasks', () => {
   homework('add', 'Romeo and Juliet essay', '--subject', 'english');
   assert.match(homework('find', 'romeo', 'and', 'juliet'), /Romeo and Juliet essay/, 'searches with all the words');
 });
+
+test('clear deletes the finished tasks', () => {
+  homework('add', 'Finished');
+  homework('add', 'Still to do');
+  homework('done', '1');
+  assert.equal(homework('clear'), 'Cleared 1 finished task(s).');
+  assert.match(homework('list', '--all'), /Still to do/);
+  assert.doesNotMatch(homework('list', '--all'), /Finished/);
+});
