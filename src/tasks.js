@@ -1,15 +1,21 @@
 // The homework list: plain functions that take a list and return a new one.
 
-export function createTask(list, title, subject) {
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+export function createTask(list, title, subject, due) {
   const cleanTitle = title.trim();
   if (cleanTitle === '') {
     throw new Error('A task needs a title');
+  }
+  if (due !== undefined && (!DATE.test(due) || Number.isNaN(Date.parse(due)))) {
+    throw new Error(`The due date must look like 2026-12-01, not "${due}"`);
   }
   let id = 1;
   for (let i = 0; i < list.length; i++) {
     if (list[i].id >= id) id = list[i].id + 1;
   }
   const task = { id: id, title: cleanTitle, subject: subject || 'general', done: false };
+  if (due) task.due = due;
   return [...list, task];
 }
 
@@ -35,4 +41,14 @@ export function removeTask(list, id) {
 export function listTasks(list, showDone) {
   if (showDone) return list;
   return list.filter((task) => !task.done);
+}
+
+// A task is overdue when it isn't done and its due date is before today.
+// Dates are compared as text, which works because they are all YYYY-MM-DD.
+export function isOverdue(task, today = new Date().toISOString().slice(0, 10)) {
+  return !task.done && Boolean(task.due) && task.due < today;
+}
+
+export function overdueTasks(list, today) {
+  return list.filter((task) => isOverdue(task, today)).sort((a, b) => a.due.localeCompare(b.due));
 }

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { completeTask, createTask, listTasks, removeTask } from '../src/tasks.js';
+import { completeTask, createTask, isOverdue, listTasks, overdueTasks, removeTask } from '../src/tasks.js';
 
 test('createTask adds a task with the next id', () => {
   let list = createTask([], 'Read chapter 3', 'english');
@@ -47,4 +47,23 @@ test('listTasks hides finished tasks unless asked', () => {
   const list = completeTask(createTask(createTask([], 'A'), 'B'), 1);
   assert.deepEqual(listTasks(list).map((t) => t.title), ['B']);
   assert.equal(listTasks(list, true).length, 2);
+});
+
+test('createTask keeps a valid due date and refuses a bad one', () => {
+  assert.equal(createTask([], 'Essay', 'english', '2026-12-01')[0].due, '2026-12-01');
+  assert.equal(createTask([], 'Essay')[0].due, undefined);
+  assert.throws(() => createTask([], 'Essay', 'english', '1st December'), /must look like 2026-12-01/);
+  assert.throws(() => createTask([], 'Essay', 'english', '2026-13-45'), /must look like/);
+});
+
+test('overdue tasks are the unfinished ones due before today, oldest first', () => {
+  let list = createTask([], 'Late essay', 'english', '2026-11-01');
+  list = createTask(list, 'Very late maths', 'maths', '2026-10-15');
+  list = createTask(list, 'Future project', 'science', '2026-12-20');
+  list = createTask(list, 'No date');
+  list = createTask(list, 'Done but late', 'art', '2026-10-01');
+  list = completeTask(list, 5);
+  assert.deepEqual(overdueTasks(list, '2026-11-20').map((t) => t.title), ['Very late maths', 'Late essay']);
+  assert.equal(isOverdue(list[2], '2026-11-20'), false);
+  assert.equal(isOverdue(list[0], '2026-11-01'), false, 'due today is not late yet');
 });

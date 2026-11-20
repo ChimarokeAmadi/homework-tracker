@@ -30,3 +30,12 @@ test('add, list, done and remove', () => {
 test('an unknown command shows the help', () => {
   assert.match(homework('dance'), /Usage:/);
 });
+
+test('overdue lists the late tasks', () => {
+  assert.equal(homework('overdue'), 'Nothing is late. Nice!');
+  homework('add', 'Old homework', '--due', '2020-01-01');
+  homework('add', 'Future homework', '--due', '2999-01-01');
+  const out = homework('overdue');
+  assert.match(out, /Old homework \(general\) due 2020-01-01 \(LATE!\)/);
+  assert.doesNotMatch(out, /Future homework/);
+});
