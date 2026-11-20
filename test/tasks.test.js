@@ -48,3 +48,10 @@ test('listTasks hides finished tasks unless asked', () => {
   assert.deepEqual(listTasks(list).map((t) => t.title), ['B']);
   assert.equal(listTasks(list, true).length, 2);
 });
+
+test('createTask keeps a valid due date and refuses a bad one', () => {
+  assert.equal(createTask([], 'Essay', 'english', '2026-12-01')[0].due, '2026-12-01');
+  assert.equal(createTask([], 'Essay')[0].due, undefined);
+  assert.throws(() => createTask([], 'Essay', 'english', '1st December'), /must look like 2026-12-01/);
+  assert.throws(() => createTask([], 'Essay', 'english', '2026-13-45'), /must look like/);
+});

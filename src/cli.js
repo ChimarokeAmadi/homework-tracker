@@ -7,7 +7,7 @@ import { completeTask, createTask, listTasks, removeTask } from './tasks.js';
 import { load, save } from './storage.js';
 
 const HELP = `Usage:
-  homework add "<title>" [--subject <subject>]   add a task
+  homework add "<title>" [--subject <subject>] [--due YYYY-MM-DD]   add a task
   homework list [--all]                          show tasks (--all includes finished ones)
   homework done <id>                             mark a task as finished
   homework remove <id>                           delete a task
@@ -21,14 +21,15 @@ function option(args, name) {
 
 function show(task) {
   const box = task.done ? '[x]' : '[ ]';
-  return `${String(task.id).padStart(3)} ${box} ${task.title} (${task.subject})`;
+  const due = task.due ? ` due ${task.due}` : '';
+  return `${String(task.id).padStart(3)} ${box} ${task.title} (${task.subject})${due}`;
 }
 
 export function run(args, print = console.log) {
   const command = args[0];
   let list = load();
   if (command === 'add') {
-    list = createTask(list, args[1] || '', option(args, '--subject'));
+    list = createTask(list, args[1] || '', option(args, '--subject'), option(args, '--due'));
     save(list);
     print(`Added: ${show(list[list.length - 1])}`);
   } else if (command === 'list') {
