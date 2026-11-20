@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { completeTask, createTask, listTasks, removeTask } from '../src/tasks.js';
+import { completeTask, createTask, listTasks, removeTask, stats } from '../src/tasks.js';
 
 test('createTask adds a task with the next id', () => {
   let list = createTask([], 'Read chapter 3', 'english');
@@ -47,4 +47,18 @@ test('listTasks hides finished tasks unless asked', () => {
   const list = completeTask(createTask(createTask([], 'A'), 'B'), 1);
   assert.deepEqual(listTasks(list).map((t) => t.title), ['B']);
   assert.equal(listTasks(list, true).length, 2);
+});
+
+test('stats counts done and to-do tasks, per subject', () => {
+  let list = createTask([], 'Essay', 'english');
+  list = createTask(list, 'Poem', 'english');
+  list = createTask(list, 'Equations', 'maths');
+  list = completeTask(list, 1);
+  assert.deepEqual(stats(list), {
+    total: 3,
+    done: 1,
+    todo: 2,
+    bySubject: { english: { done: 1, todo: 1 }, maths: { done: 0, todo: 1 } },
+  });
+  assert.deepEqual(stats([]), { total: 0, done: 0, todo: 0, bySubject: {} });
 });

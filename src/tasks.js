@@ -36,3 +36,14 @@ export function listTasks(list, showDone) {
   if (showDone) return list;
   return list.filter((task) => !task.done);
 }
+
+// How many tasks are done, still to do, and how many per subject.
+export function stats(list) {
+  const bySubject = {};
+  for (const task of list) {
+    bySubject[task.subject] ??= { done: 0, todo: 0 };
+    bySubject[task.subject][task.done ? 'done' : 'todo'] += 1;
+  }
+  const done = list.filter((task) => task.done).length;
+  return { total: list.length, done, todo: list.length - done, bySubject };
+}

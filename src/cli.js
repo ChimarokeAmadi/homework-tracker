@@ -3,7 +3,7 @@
 // homework list [--all]
 // homework done 2
 // homework remove 2
-import { completeTask, createTask, listTasks, removeTask } from './tasks.js';
+import { completeTask, createTask, listTasks, removeTask, stats } from './tasks.js';
 import { load, save } from './storage.js';
 
 const HELP = `Usage:
@@ -11,6 +11,7 @@ const HELP = `Usage:
   homework list [--all]                          show tasks (--all includes finished ones)
   homework done <id>                             mark a task as finished
   homework remove <id>                           delete a task
+  homework stats                                 how much is done, per subject
   homework help                                  show this help`;
 
 function option(args, name) {
@@ -41,6 +42,13 @@ export function run(args, print = console.log) {
   } else if (command === 'remove') {
     save(removeTask(list, Number(args[1])));
     print('Removed.');
+  } else if (command === 'stats') {
+    const s = stats(list);
+    const percent = s.total === 0 ? 0 : Math.round((s.done / s.total) * 100);
+    print(`${s.done} of ${s.total} tasks done (${percent}%)`);
+    for (const [subject, count] of Object.entries(s.bySubject)) {
+      print(`  ${subject.padEnd(12)} ${count.done} done, ${count.todo} to do`);
+    }
   } else {
     print(HELP);
   }
