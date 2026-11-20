@@ -107,12 +107,32 @@ If we both changed the same lines, `git pull` stops with a conflict exactly like
 
 ## 6. Pull requests on GitHub
 
-The last three branches are merged through **pull requests** instead of `git merge`:
+The last branches were merged through **pull requests** instead of `git merge`:
 
 1. Push the branch and click **Compare & pull request** on GitHub.
 2. CI runs automatically and shows its result in the pull request.
 3. Review the changes (**Files changed** tab) and leave comments, using the checklist in the PR template.
 4. Merge only when CI is green. With branch protection on (Settings → Branches → require status checks), GitHub doesn't even allow merging a red pull request.
 5. Delete the branch (GitHub offers a button), then `git pull` on `main` locally.
+
+| PR | Branch | What happened |
+|---|---|---|
+| #2 | `fix/cli-entry-point` | CI failed on Node 22 (coverage), fixed with a second commit, reviewed, merged |
+| #3 | `feature/search` | green, reviewed, merged, but **before** I pushed the change the review asked for |
+| #4 | `fix/find-all-words` | the review fix for #3, in its own small follow-up PR |
+| #1 | `feature/clear-done` | red on purpose, fixed, then **conflicted** with `main` (see below), merged |
+
+By the time #1 was fixed, #2, #3 and #4 were already in `main`, and `feature/search` had added a command in the same places as `clear`. GitHub showed "This branch has conflicts". I resolved it on my computer by merging the latest `main` into the branch:
+
+```bash
+git switch feature/clear-done
+git fetch
+git merge origin/main          # CONFLICT in src/cli.js, src/tasks.js and both test files
+# keep both commands, join the import lines, add the missing closing braces
+npm run check                  # 24 tests pass
+git add -A
+git commit -m "Merge main into feature/clear-done"
+git push                       # the PR updates, CI runs again, the conflict is gone
+```
 
 The reviews are summarised in [QA-REPORT.md](QA-REPORT.md).
