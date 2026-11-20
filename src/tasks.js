@@ -52,3 +52,14 @@ export function isOverdue(task, today = new Date().toISOString().slice(0, 10)) {
 export function overdueTasks(list, today) {
   return list.filter((task) => isOverdue(task, today)).sort((a, b) => a.due.localeCompare(b.due));
 }
+
+// How many tasks are done, still to do, and how many per subject.
+export function stats(list) {
+  const bySubject = {};
+  for (const task of list) {
+    bySubject[task.subject] ??= { done: 0, todo: 0 };
+    bySubject[task.subject][task.done ? 'done' : 'todo'] += 1;
+  }
+  const done = list.filter((task) => task.done).length;
+  return { total: list.length, done, todo: list.length - done, bySubject };
+}

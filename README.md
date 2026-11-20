@@ -11,3 +11,4 @@ node src/cli.js done 1
 ## Features
 
 - Due dates: `--due 2026-12-01` when adding, and `homework overdue` to see what's late.
+- Progress: `homework stats` shows how many tasks are done, in total and per subject.

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { completeTask, createTask, isOverdue, listTasks, overdueTasks, removeTask } from '../src/tasks.js';
+import { completeTask, createTask, isOverdue, listTasks, overdueTasks, removeTask, stats } from '../src/tasks.js';
 
 test('createTask adds a task with the next id', () => {
   let list = createTask([], 'Read chapter 3', 'english');
@@ -66,4 +66,18 @@ test('overdue tasks are the unfinished ones due before today, oldest first', () 
   assert.deepEqual(overdueTasks(list, '2026-11-20').map((t) => t.title), ['Very late maths', 'Late essay']);
   assert.equal(isOverdue(list[2], '2026-11-20'), false);
   assert.equal(isOverdue(list[0], '2026-11-01'), false, 'due today is not late yet');
+});
+
+test('stats counts done and to-do tasks, per subject', () => {
+  let list = createTask([], 'Essay', 'english');
+  list = createTask(list, 'Poem', 'english');
+  list = createTask(list, 'Equations', 'maths');
+  list = completeTask(list, 1);
+  assert.deepEqual(stats(list), {
+    total: 3,
+    done: 1,
+    todo: 2,
+    bySubject: { english: { done: 1, todo: 1 }, maths: { done: 0, todo: 1 } },
+  });
+  assert.deepEqual(stats([]), { total: 0, done: 0, todo: 0, bySubject: {} });
 });

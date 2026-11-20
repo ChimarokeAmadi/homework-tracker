@@ -39,3 +39,11 @@ test('overdue lists the late tasks', () => {
   assert.match(out, /Old homework \(general\) due 2020-01-01 \(LATE!\)/);
   assert.doesNotMatch(out, /Future homework/);
 });
+
+test('stats shows the progress', () => {
+  assert.equal(homework('stats'), '0 of 0 tasks done (0%)');
+  homework('add', 'Essay', '--subject', 'english');
+  homework('add', 'Equations', '--subject', 'maths');
+  homework('done', '1');
+  assert.match(homework('stats'), /1 of 2 tasks done \(50%\)\n {2}english\s+1 done, 0 to do\n {2}maths\s+0 done, 1 to do/);
+});
